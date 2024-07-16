@@ -1,0 +1,52 @@
+version: '3.2'
+services:
+  php:
+    build:
+      context: './php/'
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+    volumes:
+      - ${PROJECT_ROOT}/:/var/www/html/
+
+  apache:
+    build:
+      context: './apache/'
+      args:
+        APACHE_VERSION: ${APACHE_VERSION}
+    depends_on:
+      - php
+      - mysqldb
+    ports:
+      - '1999:80'
+    volumes:
+      - ${PROJECT_ROOT}/:/var/www/html/
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - '8981:80'
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=${MYSQL_HOST}
+    restart: always
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql:${MYSQL_VERSION}
+    container_name: ${MYSQL_HOST}
+    restart: always
+    command:
+      - '--default-authentication-plugin=mysql_native_password'
+    env_file:
+      - '.env'
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - '8989:3306'
+    volumes:
+      - './data/db/mysql:/var/lib/mysql'
