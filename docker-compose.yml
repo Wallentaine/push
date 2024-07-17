@@ -58,10 +58,10 @@ services:
       - 443:443
     restart: always
     volumes:
-      - .data/nginx/conf/:/etc/nginx/conf.d/:rw
-      - .data/certbot/www/:/var/www/certbot/:rw
+      - ./data/nginx/conf/:/etc/nginx/conf.d/:rw
+      - ./data/certbot/www/:/var/www/certbot/:rw
   certbot:
     image: certbot/certbot:latest
     volumes:
-      - .data/certbot/www/:/var/www/certbot/:rw
-      - .data/certbot/conf/:/etc/letsencrypt/:rw
+      - ./data/certbot/www/:/var/www/certbot/:rw
+      - ./data/certbot/conf/:/etc/letsencrypt/:rw
