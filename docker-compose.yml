@@ -8,19 +8,6 @@ services:
     volumes:
       - ${PROJECT_ROOT}/:/var/www/html/
 
-  apache:
-    build:
-      context: './apache/'
-      args:
-        APACHE_VERSION: ${APACHE_VERSION}
-    depends_on:
-      - php
-      - mysqldb
-    ports:
-      - '1999:80'
-    volumes:
-      - ${PROJECT_ROOT}/:/var/www/html/
-
   myadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
@@ -57,10 +44,17 @@ services:
       - 80:80
       - 443:443
     restart: always
+    depends_on:
+      - php
+      - mysqldb
+    env_file:
+      - '.env'
     volumes:
       - ./data/nginx/conf/:/etc/nginx/conf.d/:rw
       - ./data/certbot/www/:/var/www/certbot/:rw
       - ./data/certbot/conf/:/etc/letsencrypt/:rw
+      - ${PROJECT_ROOT}/:/var/www/html/
+
   certbot:
     image: certbot/certbot:latest
     volumes:
